@@ -5,7 +5,7 @@ var Dial = require('../../')
 var App = React.createClass({
   render: function() {
     return (
-      <Dial/>
+      <Dial value="10"/>
     )
   }
 })

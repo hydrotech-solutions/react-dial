@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src --out-dir js",
-    "example": "browserify -t [ babelify --presets [ react es2015 ] ] example/js/root.jsx -o example/bundle.js"
+    "example": "npm run build && browserify -t [ babelify --presets [ react es2015 ] ] example/js/root.jsx -o example/bundle.js"
   },
   "repository": {
     "type": "git",

@@ -12,9 +12,10 @@ var App = React.createClass({
     this.setState({dialValue: newValue})
   },
   render: function() {
+    var dialReading = `${this.state.dialValue}lbs`
     return (
       <Dial
-        value={this.state.dialValue}
+        value={dialReading}
         onChange={this.handleDialChange}
         angleOffset={135}
         angleArc={270}

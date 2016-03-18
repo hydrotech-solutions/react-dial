@@ -5,7 +5,7 @@ var Dial = React.createClass({
   propTypes: {
     min: pt.number,
     max: pt.number,
-    value: pt.number,
+    value: pt.oneOfType([pt.string, pt.number]), // value may be a string containing units
     angleOffset: pt.number,
     angleArc: pt.number,
     readOnly: pt.bool,
@@ -73,7 +73,8 @@ var Dial = React.createClass({
       borderStyle: 'none', // "invisible text box"
       fontSize: fontSize,
       width: `${String(this.props.value).length}ch`,
-      color: textColor
+      color: textColor,
+      backgroundColor: 'transparent'
     }
 
     return (
@@ -90,18 +91,20 @@ var Dial = React.createClass({
     this.updateCanvas()
   },
   handleChange: function(e) {
-    var value = parseFloat(e.target.value) || 0 // strip any formatting from the value
-    if ((value >= this.props.min) && (value <= this.props.max)) {
-      this.props.onChange(value)
-    }
+    var value = unUnits(e.target.value) // strip any formatting from the value and convert it to a number
+
   },
   handleKeyDown: function(e) {
+
     var key = e.key
-    if (key === 'ArrowUp') {
-      this.props.onChange(this.props.value + 1)
-    }
-    if (key === 'ArrowDown') {
-      this.props.onChange(this.props.value - 1)
+    var newValue = unUnits(this.props.value)
+
+    if      (key === 'ArrowUp')   this.triggerUpdate(newValue + 1)
+    else if (key === 'ArrowDown') this.triggerUpdate(newValue - 1)
+  },
+  triggerUpdate(newValue) { //common hook for all sources of change to send new values to
+    if ((newValue >= this.props.min) && (newValue <= this.props.max)) {
+      this.props.onChange(newValue)
     }
   },
   updateCanvas: function() {
@@ -119,7 +122,7 @@ var Dial = React.createClass({
     var offset       = this.props.angleOffset
     var arc          = this.props.angleArc
     var scale        = this.props.max - this.props.min //max value normalized to be starting-value agnostic
-    var value        = this.props.value - this.props.min // normalized current value
+    var value        = unUnits(this.props.value) - this.props.min // normalized current value
     var fillFraction = value/scale
 
     var startAngle   = radians(offset)
@@ -150,11 +153,6 @@ var Dial = React.createClass({
 
 module.exports = Dial
 
-function filterProps(props) {
-  var {value, change, ...filtered} = props
-  return filtered
-}
-
 function radians(degrees) {
   return degrees * Math.PI / 180
 }
@@ -162,3 +160,9 @@ function radians(degrees) {
 function degrees(radians) {
   return radians * 180 / Math.PI;
 };
+
+function unUnits(s) {
+  // possible inputs: 0, 1, "0", "1", undefined, NaN
+  if (s) return parseFloat(s) // handle first four cases
+  else return 0 // return 0 for falsey inputs
+}

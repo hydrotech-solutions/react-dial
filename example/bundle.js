@@ -17,8 +17,9 @@ var App = React.createClass({
     this.setState({ dialValue: newValue });
   },
   render: function render() {
+    var dialReading = this.state.dialValue + 'lbs';
     return React.createElement(Dial, {
-      value: this.state.dialValue,
+      value: dialReading,
       onChange: this.handleDialChange,
       angleOffset: 135,
       angleArc: 270,
@@ -49,12 +50,6 @@ module.exports = require('./js/Dial.js');
 
 var _propTypes;
 
-function _objectWithoutProperties(obj, keys) {
-  var target = {};for (var i in obj) {
-    if (keys.indexOf(i) >= 0) continue;if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;target[i] = obj[i];
-  }return target;
-}
-
 function _defineProperty(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
@@ -72,7 +67,7 @@ var Dial = React.createClass({
   propTypes: (_propTypes = {
     min: pt.number,
     max: pt.number,
-    value: pt.number,
+    value: pt.oneOfType([pt.string, pt.number]), // value may be a string containing units
     angleOffset: pt.number,
     angleArc: pt.number,
     readOnly: pt.bool,
@@ -135,7 +130,8 @@ var Dial = React.createClass({
       borderStyle: 'none', // "invisible text box"
       fontSize: fontSize,
       width: String(this.props.value).length + 'ch',
-      color: textColor
+      color: textColor,
+      backgroundColor: 'transparent'
     };
 
     return React.createElement('div', { style: divStyles, onKeyDown: this.handleKeyDown }, React.createElement('canvas', { style: canvasStyles, width: this.props.width, height: this.props.width, ref: 'canvas' }), React.createElement('input', { style: inputStyles, value: this.props.value, onChange: this.handleChange, readOnly: this.props.readOnly }));
@@ -147,20 +143,22 @@ var Dial = React.createClass({
     this.updateCanvas();
   },
   handleChange: function handleChange(e) {
-    var value = parseFloat(e.target.value) || 0; // strip any formatting from the value
-    if (value >= this.props.min && value <= this.props.max) {
-      this.props.onChange(value);
-    }
+    var value = unUnits(e.target.value); // strip any formatting from the value and convert it to a number
   },
   handleKeyDown: function handleKeyDown(e) {
+
     var key = e.key;
-    if (key === 'ArrowUp') {
-      this.props.onChange(this.props.value + 1);
-    }
-    if (key === 'ArrowDown') {
-      this.props.onChange(this.props.value - 1);
+    var newValue = unUnits(this.props.value);
+
+    if (key === 'ArrowUp') this.triggerUpdate(newValue + 1);else if (key === 'ArrowDown') this.triggerUpdate(newValue - 1);
+  },
+  triggerUpdate: function triggerUpdate(newValue) {
+    //common hook for all sources of change to send new values to
+    if (newValue >= this.props.min && newValue <= this.props.max) {
+      this.props.onChange(newValue);
     }
   },
+
   updateCanvas: function updateCanvas() {
 
     // get a reference to the canvas context
@@ -176,7 +174,7 @@ var Dial = React.createClass({
     var offset = this.props.angleOffset;
     var arc = this.props.angleArc;
     var scale = this.props.max - this.props.min; //max value normalized to be starting-value agnostic
-    var value = this.props.value - this.props.min; // normalized current value
+    var value = unUnits(this.props.value) - this.props.min; // normalized current value
     var fillFraction = value / scale;
 
     var startAngle = radians(offset);
@@ -207,15 +205,6 @@ var Dial = React.createClass({
 
 module.exports = Dial;
 
-function filterProps(props) {
-  var value = props.value;
-  var change = props.change;
-
-  var filtered = _objectWithoutProperties(props, ['value', 'change']);
-
-  return filtered;
-}
-
 function radians(degrees) {
   return degrees * Math.PI / 180;
 }
@@ -223,6 +212,12 @@ function radians(degrees) {
 function degrees(radians) {
   return radians * 180 / Math.PI;
 };
+
+function unUnits(s) {
+  // possible inputs: 0, 1, "0", "1", undefined, NaN
+  if (s) return parseFloat(s); // handle first four cases
+  else return 0; // return 0 for falsey inputs
+}
 
 },{"react":162}],5:[function(require,module,exports){
 (function (process){

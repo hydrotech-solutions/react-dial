@@ -13,7 +13,13 @@ var App = React.createClass({
   },
   render: function() {
     return (
-      <Dial value={this.state.dialValue} onChange={this.handleDialChange}/>
+      <Dial
+        value={this.state.dialValue}
+        onChange={this.handleDialChange}
+        angleOffset={135}
+        angleArc={270}
+        lineCap="round"
+      />
     )
   }
 })

@@ -1,6 +1,28 @@
 var React = require('react')
+var pt = React.PropTypes
 
 var Dial = React.createClass({
+  propTypes: {
+    min: pt.number,
+    max: pt.number,
+    value: pt.number,
+    angleOffset: pt.number,
+    angleArc: pt.number,
+    readOnly: pt.bool,
+    rotation: pt.string,
+    thickness: pt.number,
+    lineCap: pt.string,
+    width: pt.number,
+    fgColor: pt.string,
+    bgColor: pt.string,
+    inputColor: pt.string,
+    fontFamily: pt.string,
+    fontWeight: pt.oneOfType([pt.string, pt.number]),
+    fontSize: pt.oneOfType([pt.string, pt.number]),
+    readOnly: pt.bool,
+    textColor: pt.string,
+    onChange: pt.func
+  },
   getDefaultProps: function() {
     return {
       min: 0,
@@ -11,20 +33,25 @@ var Dial = React.createClass({
       readOnly: false,
       rotation: 'clockwise',
       thickness: 1,
-      lineCap: 'square',
+      lineCap: 'butt',
       width: 200,
       fgColor: "#0fb6ff",
       bgColor: "#eee",
       inputColor: "#0fb6ff",
       font: 'Sans-Serif',
       fontWeight: '400',
-      // TODO: auto font size
+      fontSize: null, //we catch this in the render function
+      readOnly: false,
+      textColor: null, // save for render function
       onChange: function(v){}
-
     }
   },
   // return the dom structure
   render: function() {
+
+    // "smart defaults"
+    var fontSize = this.props.fontSize || (this.props.width*0.3)
+    var textColor = this.props.textColor || this.props.fgColor || "#0fb6ff"
 
     var divStyles = {
       position: 'relative', // relative positioning to support absolutely positioned children
@@ -44,13 +71,15 @@ var Dial = React.createClass({
       fontFamily: this.props.font, // pass through font settings
       fontWeight: this.props.fontWeight,
       borderStyle: 'none', // "invisible text box"
-      fontSize: this.props.fontSize
+      fontSize: fontSize,
+      width: `${String(this.props.value).length}ch`,
+      color: textColor
     }
 
     return (
-      <div style={divStyles}>
+      <div style={divStyles} onKeyDown={this.handleKeyDown}>
         <canvas style={canvasStyles} width={this.props.width} height={this.props.width} ref="canvas"/>
-        <input style={inputStyles} value={this.props.value} onChange={this.handleChange}/>
+        <input style={inputStyles} value={this.props.value} onChange={this.handleChange} readOnly={this.props.readOnly}/>
       </div>
     )
   },
@@ -64,6 +93,15 @@ var Dial = React.createClass({
     var value = parseFloat(e.target.value) || 0 // strip any formatting from the value
     if ((value >= this.props.min) && (value <= this.props.max)) {
       this.props.onChange(value)
+    }
+  },
+  handleKeyDown: function(e) {
+    var key = e.key
+    if (key === 'ArrowUp') {
+      this.props.onChange(this.props.value + 1)
+    }
+    if (key === 'ArrowDown') {
+      this.props.onChange(this.props.value - 1)
     }
   },
   updateCanvas: function() {
@@ -92,21 +130,19 @@ var Dial = React.createClass({
     canvas.lineWidth = lineWidth
     canvas.lineCap = this.props.lineCap
 
+    // clear the canvas
+    canvas.clearRect(0,0,this.props.width,this.props.width)
+
     // render the dial background (grey arc)
     if (this.props.bgColor !== "none") {
         canvas.beginPath()
-          console.log(canvas.strokeStyle)
           canvas.strokeStyle = this.props.bgColor
-          console.log(canvas.strokeStyle)
           canvas.arc(centerxy, centerxy, radius, startAngle, endAngle, anticlockwise)
         canvas.stroke()
     }
 
-    console.log('rendering dial reading')
     canvas.beginPath()
-      console.log(canvas.strokeStyle)
       canvas.strokeStyle = this.props.fgColor
-      console.log(canvas.strokeStyle)
       canvas.arc(centerxy, centerxy, radius, startAngle, readingAngle, anticlockwise)
     canvas.stroke()
   }
@@ -122,3 +158,7 @@ function filterProps(props) {
 function radians(degrees) {
   return degrees * Math.PI / 180
 }
+
+function degrees(radians) {
+  return radians * 180 / Math.PI;
+};

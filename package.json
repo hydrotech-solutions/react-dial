@@ -1,6 +1,6 @@
 {
   "name": "react-dial",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "jquery-knob for react",
   "main": "index.js",
   "scripts": {
@@ -19,8 +19,8 @@
   },
   "homepage": "https://github.com/whmountains/react-dial#readme",
   "dependencies": {
-    "react": "^0.14.7",
-    "react-dom": "^0.14.7"
+    "react": ">=0.14.7",
+    "react-dom": ">=0.14.7"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",

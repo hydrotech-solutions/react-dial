@@ -1,7 +1,7 @@
-var React = require('react')
-var reactDom = require('react-dom')
+import React from 'react'
+import reactDom from 'react-dom'
 
-var App = require('./App.jsx')
+import App from './App.jsx'
 
 reactDom.render(
   <App/>,

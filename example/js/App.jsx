@@ -1,17 +1,21 @@
-var React = require('react')
+import React, { Component } from 'react'
 
-var Dial = require('../../')
+import Dial from '../../'
 
-var App = React.createClass({
-  getInitialState: function() {
-    return {
+class App extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
       dialValue: 25
     }
-  },
-  handleDialChange: function(newValue) {
+  }
+
+  handleDialChange = (newValue) => {
     this.setState({dialValue: newValue})
-  },
-  render: function() {
+  };
+
+  render() {
     var dialReading = `${this.state.dialValue}lbs`
     return (
       <Dial
@@ -23,6 +27,6 @@ var App = React.createClass({
       />
     )
   }
-})
+}
 
-module.exports = App
+export default App

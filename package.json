@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"type `npm run example` to build the example project and test things out.\"",
     "build": "babel src --out-dir js",
-    "example": "npm run build && browserify -v -t [ babelify --presets [ react es2015 ] ] example/js/root.jsx -o example/bundle.js"
+    "example": "npm run build && browserify -v -t [ babelify --presets [ react es2015 stage-2 ] ] example/js/root.jsx -o example/bundle.js"
   },
   "repository": {
     "type": "git",
@@ -31,5 +31,8 @@
     "browserify": "^14.3.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4"
+  },
+  "dependencies": {
+    "prop-types": "^15.5.9"
   }
 }

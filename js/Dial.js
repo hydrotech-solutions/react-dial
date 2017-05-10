@@ -58,8 +58,8 @@ var Dial = React.createClass({
 
     var divStyles = {
       position: 'relative', // relative positioning to support absolutely positioned children
-      width: this.props.width,
-      height: this.props.width, // always square
+      width: '' + this.props.width,
+      height: '' + this.props.width, // always square
       display: 'flex' // allow for textbox to be easily centered
     };
 

@@ -66,7 +66,8 @@ var Dial = function (_Component) {
         position: 'relative', // relative positioning to support absolutely positioned children
         width: this.props.width,
         height: this.props.width, // always square
-        display: 'flex' // allow for textbox to be easily centered
+        display: 'flex', // allow for textbox to be easily centered
+        margin: 'auto'
       };
 
       var canvasStyles = {
@@ -81,7 +82,7 @@ var Dial = function (_Component) {
         fontWeight: this.props.fontWeight,
         borderStyle: 'none', // "invisible text box"
         fontSize: fontSize,
-        width: String(this.props.value).length + 'ch',
+        width: '100%',
         color: textColor,
         backgroundColor: 'transparent'
       };
